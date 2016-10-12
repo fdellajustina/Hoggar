@@ -48,7 +48,7 @@ int main () {
   double      lyap[N], lyap_sum[N], znorm[N];
   char        lyap_c[128];
 
-  FILE       *out_ly;
+  FILE       *out_ly; //testando git
   sprintf (lyap_c, "bts-lyaps-%s.dat", vers_id);
   if ((out_ly = fopen (lyap_c, "w")) == NULL)
     return 1;
