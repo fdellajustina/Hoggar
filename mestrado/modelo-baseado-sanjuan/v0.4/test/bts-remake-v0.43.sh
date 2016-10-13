@@ -1,0 +1,1 @@
+./bts-make-v0.43.sh -DNPHI=1 -DNTD2=1 -DPHI_MIN=20.0e0 -DPHI_MAX=2.0e1 -DTD2_MIN=4.5e0 -DTD2_MAX=2.0e1
