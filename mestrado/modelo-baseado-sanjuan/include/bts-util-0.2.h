@@ -58,6 +58,13 @@ void make_header (FILE * o) {
   fprintf (o, "#        d4 = %10.5e\n", d4);
   fprintf (o, "#        k3 = %10.5e\n", k3);
   fprintf (o, "#\n");
+  fprintf (o, "#        nx = %5d\n", nx);
+  fprintf (o, "#        ny = %5d\n", ny);
+  fprintf (o, "#      xmin = %10.5e\n", ymin);
+  fprintf (o, "#      xmax = %10.5e\n", xmax);
+  fprintf (o, "#      ymin = %10.5e\n", ymin);
+  fprintf (o, "#      ymax = %10.5e\n", ymax);
+  fprintf (o, "#\n");
   fprintf (o, "#      tmax = %10.5e\n", tmax);
   fprintf (o, "#     trans = %10.5e\n", trans);
   fprintf (o, "#         h = %10.5e\n", h);

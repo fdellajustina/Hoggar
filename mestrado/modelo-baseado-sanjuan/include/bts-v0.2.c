@@ -36,19 +36,18 @@ double      J[N][N];
 #include "bts-util-0.2.h"                          // bibliotecas
 #include "bts-ydot-0.2.h"                          // derivs function
 #include "/home/fernanda/util/dverk.c"             // integrador
-//#include "/home/fdellajustina/util/dverk.c"        // integrador
 
 //  ---------------------------------------------------------------------
 int main () {
   int         ind, loop, nphi, i, j, k, irate=10;
-  int         na14, na22;
-  double      a14_min, a14_max, a22_min, a22_max;
-  double      t, tout, w[NN * 9], c[24];
+  //int         na14, na22;
+  //double      a14_min, a14_max, a22_min, a22_max;
+  double      t, tout, w[NN * 9], c[24], xm, ym;
 
   double      lyap[N], lyap_sum[N], znorm[N];
   char        lyap_c[128];
 
-  FILE       *out_ly; //testando git
+  FILE       *out_ly;
   sprintf (lyap_c, "bts-lyaps-%s.dat", vers_id);
   if ((out_ly = fopen (lyap_c, "w")) == NULL)
     return 1;
@@ -56,23 +55,29 @@ int main () {
 
   make_header (stdout);
 
-  na14    = 500;
-  na22    = 500;
-  a22_min = 1.0e-1;
-  a22_max = 1.0e-4;
-  a14_min = 1.0e-1;
-  a14_max = 1.0e-4;
+  //na14    = nx;
+  //na22    = ny;
+  //a22_min = xmin;
+  //a22_max = xmax;
+  //a14_min = ymin;
+  //a14_max = ymax;
+
+  //a22_min = 1.0e-1;
+  //a22_max = 1.0e-4;
+  //a14_min = 1.0e-1;
+  //a14_max = 1.0e-4;
 
   #pragma omp parallel private(i,j)
   {
-    for (i = 0; i <= na14; i++){
-      a14 = dequant(i, 0, na14, a14_min, a14_max);
+    for (i = 0; i <= ny; i++){
+      //a14 = dequant(i, 0, na14, a14_min, a14_max);
+      ym = a14 = dequant(i, 0, ny, ymin, ymax);
       printf("i = %d \n", i);                     // print na tela, controle!
 
       #pragma omp single
       {
-        for (j = 0; j <= na22; j++){
-          a22 = dequant(j, 0, na22, a22_min, a22_max);
+        for (j = 0; j <= nx; j++){
+          xm = a22 = dequant(j, 0, nx, xmin, xmax);
 
           fflush( out_ly );
 
@@ -108,7 +113,7 @@ int main () {
           for (k = 0; k < N; k++)
             lyap[k] = lyap_sum[k] / (t - trans);
 
-          fprintf (out_ly, "%8.4f %8.4f %18.12f %18.12f %18.12f %18.12f\n", a22, a14, lyap[0], lyap[1], lyap[2], lyap[3]);  // salva o espectro de expoentes de lyapunov
+          fprintf (out_ly, "%8.4f %8.4f %18.12f %18.12f %18.12f %18.12f\n", xm, ym, lyap[0], lyap[1], lyap[2], lyap[3]);  // salva o espectro de expoentes de lyapunov
         } //end loop r3
         fprintf (out_ly, "\n");  // separa um bloco de outro
       }  // and single region

@@ -48,6 +48,37 @@ int          nn = NN;
 #define  R2       1.2e0
 #define  R3       1.291e0
 
+// malha do sistema
+#ifndef NX
+  #define NX = 50
+#endif
+
+#ifndef NY
+  #define NY = 50
+#endif
+
+#ifndef XMIN
+  #define XMIN = 0.0e0
+#endif
+
+#ifndef XMAX
+  #define XMAX = 10.0e0
+#endif
+
+#ifndef YMIN
+  #define YMIN = 0.0e0
+#endif
+
+#ifndef YMAX
+  #define YMAX = 10.0e0
+#endif
+int          nx = NX;                            // divisão da malha em x
+int          ny = NY;                            // divisão da malha em y
+double     xmin = XMIN;                          // valor inferior da malha
+double     xmax = XMAX;                          // valor superior da malha
+double     ymin = YMIN;                          // valor inferior da malha
+double     ymax = YMAX;                          // valor superior da malha
+
 double   r2     = R2;                            // proliferation rate
 double   r3     = R3;                            // proliferation rate
 double   a12    = A12;                           // competition coefficient between GC and CC (normalized)
