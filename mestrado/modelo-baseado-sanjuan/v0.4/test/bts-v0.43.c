@@ -34,7 +34,7 @@ const char  auth1_id[128] = "Fernanda Jaiara Dellajustina, e-mail: fernandadella
 const char  dept1_id[128] = "Departamaneto de Física";
 const char  host1_id[128] = "UFPR, Curitiba-PR, Brasil";
 
-#include "bts-vars-0.4.h"                          // parametros/variaveis
+#include "bts-vars-0.43.h"                          // parametros/variaveis
 #include "bts-util-0.4.h"                          // bibliotecas
 #include "bts-ydot-0.4.h"                          // derivs function
 #include "/home/fernanda/util/dverk.c"             // integrador
@@ -45,8 +45,10 @@ double      y[NN];
 int main () {
   //FILE *o=fopen("optimal-q.dat","w");
   FILE *a=fopen("bts.dat","w");
-  int         ind, loop, i, j, iT, timex0, ntx0, nphi, ntd2, ext_tumor;
-  double      phi_min, phi_max, td2_min, td2_max, phi0, td1, td2, eps, epst, nT;
+  int         ind, loop, i, j, iT, timex0, ntx0, ext_tumor;
+  double      phi0, td1, td2, eps, epst, nT;
+  //int         ind, loop, i, j, iT, timex0, ntx0, nphi, ntd2, ext_tumor;
+  //double      phi_min, phi_max, td2_min, td2_max, phi0, td1, td2, eps, epst, nT;
   double      t, tout, w[NN * 9], c[24], sumx;
 
   make_header (stdout);
@@ -56,13 +58,6 @@ int main () {
   ntx0    = 100.0e0 / h; // numero de tempo seguidos com x=0
   eps     = h;           // contagem do período
   epst    = 1.0e-2;      // extinção do tumor
-
-  nphi    = 1;
-  ntd2    = 1;
-  phi_min = 11.0e0;      // dose de quimioterapico
-  phi_max = 20.0e0;
-  td2_min = 4.5e0;       // dose de quimioterapico
-  td2_max = 10.0e0;
 
   #pragma omp parallel private(i,j)
   {
@@ -74,14 +69,14 @@ int main () {
       {
         for (j = 0; j <  ntd2; j++){
           td2 = dequant(j,0,ntd2,td2_min,td2_max);      // tempo de aplicação do quimio
-          td1 = 2.0e0 * td2;                            // tempo sem aplicação do quimio
+          td1 = 0.0e0 * td2;                            // tempo sem aplicação do quimio
 
           //fflush(o);
 
           y[0] = 0.2e0;                                       // x
           y[1] = 0.9e0;                                        // y
           y[2] = 0.1e0;                                        // z
-          y[3] = 0.0e0;                                        // q
+          y[3] = phi_max;                                     // q
 
           t    = 0.0e0;
           ind  = 1;
@@ -91,27 +86,33 @@ int main () {
           timex0 = 0;     // contagem de tempo em que x=0
           ext_tumor = 0;  // extinção do tumor? (FLAG)
           sumx   = 0.0e0; // média de x
+          //phi    = phi0;
 
           // órbita
           while (t <= tmax) {
-           if(loop % 10 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3]);
+           if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3]);
 
-           if(ext_tumor == 0) {
-            if(((iT+1) % 2 == 0)){
+            if(td1 <= 1.0e-5) {
               phi = phi0;
-              if((nT - t) < eps){
-                 iT++;
-                 nT += td1;
-              }
             }
             else{
-              phi = 0.0e0;
-              if((nT - t) < eps){
-                 iT++;
-                 nT += td2;
+             //if(ext_tumor == 0) {
+              if(((iT+1) % 5 == 0)){
+                phi = phi0;
+                if((nT - t) < eps){
+                   iT++;
+                   nT += td1;
+                }
               }
-            }
-           }
+              else{
+                phi = 0.0e0;
+                if((nT - t) < eps){
+                   iT++;
+                   nT += td2;
+                }
+              }
+             //}
+         }
 
             tout = t + h;
             dverk (&nn, &t, y, &tout, &tol, &ind, c, &nn, w);
@@ -119,14 +120,14 @@ int main () {
             loop++;
 
            if(ext_tumor == 0) {
-            if(fabs(y[0]) <= epst){
+            if(fabs(y[1]) <= epst){
               timex0++;
               sumx+=y[0];
               if(timex0 == ntx0){
                 //fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, td2, sumx/(double) timex0);
                 ext_tumor = 1;
-                phi0 = 0.0e0;
-                //y[3] = phi0;
+                phi0 = phi_max;
+                //y[3] = phi_max;
                 //break;
               }
             }
