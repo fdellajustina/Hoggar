@@ -47,60 +47,55 @@ double      y[NN];
 //  ---------------------------------------------------------------------
 int main () {
   FILE *o=fopen("optimal-phid4.dat","w");
-  //FILE *a=fopen("bts.dat","w");
-  int         ind, loop, i, j, iT, timex0, ntx0, ext_tumor;
+  int         ind, loop, i, j, iT, timex0, ntx0, ext_tumor, freqQui;
   double      phi0, td1, td2, eps, epst, nT;
-  //int         ind, loop, i, j, iT, timex0, ntx0, nphi, ntd2, ext_tumor;
-  //double      phi_min, phi_max, td2_min, td2_max, phi0, td1, td2, eps, epst, nT;
-  double      t, tout, w[NN * 9], c[24], sumx;
+  double      t, tout, w[NN * 9], c[24], sumy;
 
   make_header (stdout);
   make_header (o);
-  //make_header (a);
 
-  ntx0    = 100.0e0 / h; // numero de tempo seguidos com x=0
-  eps     = h;           // contagem do período
-  epst    = 1.0e-2;      // extinção do tumor
-  td2     = 11.0e0;      // período de aplicação do quimioterápico
-  td1     = 2.0e0 * td2; // período sem aplicação do quimioterápico
+  freqQui = 35;               // frequencia de aplicação do quimio
+  ntx0    = 100.0e0 / h;      // numero de tempo seguidos com x=0
+  eps     = h;                // contagem do período
+  epst    = 1.0e-2;           // extinção do tumor
+  td2     = 11.0e0;           // período de aplicação do quimioterápico
+  td1     = 2.0e0 * td2;      // período sem aplicação do quimioterápico
 
   #pragma omp parallel private(i,j)
   {
     for (i = 0; i < nphi; i++){
       phi0 = dequant(i, 0, nphi, phi_min, phi_max);
-      printf("phi = %6.2f i = %d \n", phi0, i);                                  // print na tela, controle!
+      printf("phi = %6.2f i = %d \n", phi0, i);             // print na tela, controle!
 
       #pragma omp single
       {
         for (j = 0; j <  nd4; j++){
-          d4 = dequant(j,0,nd4,d4_min,d4_max);         // Taxa de decaimento do quimiterápico
+          d4 = dequant(j,0,nd4,d4_min,d4_max);              // Taxa de decaimento do quimiterápico
 
           fflush(o);
 
-          y[0] = 0.2e0;                                       // x
-          y[1] = 0.9e0;                                        // y
-          y[2] = 0.1e0;                                        // z
-          y[3] = phi_max;                                     // q
+          y[0] = 0.2e0;                                     // x
+          y[1] = 0.9e0;                                     // y
+          y[2] = 0.1e0;                                     // z
+          y[3] = phi_max;                                   // q
 
           t    = 0.0e0;
           ind  = 1;
           loop = 0;
           iT   = 1;
-          nT   = td2;     // começa com aplicação
-          timex0 = 0;     // contagem de tempo em que x=0
-          ext_tumor = 0;  // extinção do tumor? (FLAG)
-          sumx   = 0.0e0; // média de x
+          nT   = td2;                                       // começa com aplicação
+          timex0 = 0;                                       // contagem de tempo em que x=0
+          ext_tumor = 0;                                    // extinção do tumor? (FLAG)
+          sumy   = 0.0e0;                                   // média de x
 
           // órbita
           while (t <= tmax) {
-           //if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3]);
-
             if(td1 <= 1.0e-5) {
               phi = phi0;
             }
             else{
-             if(ext_tumor == 0) {              // tumor extinto a aplicação de quimio é interompida
-              if(((iT+1) % 35 == 0)){
+             if(ext_tumor == 0) {                           // tumor extinto a aplicação de quimio é interompida
+              if(((iT+1) % freqQui == 0)){
                 phi = phi0;
                 if((nT - t) < eps){
                    iT++;
@@ -115,7 +110,7 @@ int main () {
                 }
               }
              }
-         }
+            }
 
             tout = t + h;
             dverk (&nn, &t, y, &tout, &tol, &ind, c, &nn, w);
@@ -123,28 +118,26 @@ int main () {
             loop++;
 
            if(ext_tumor == 0) {
-            if(fabs(y[1]) <= epst){
+            if(fabs(y[0]) <= epst){
               timex0++;
-              sumx+=y[0];
+              sumy+=y[1];
               if(timex0 == ntx0){
-                //fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, td2, sumx/(double) timex0);
+                fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, d4, sumy/(double) timex0);
                 ext_tumor = 1;
-                phi0 = phi_max;
-                //y[3] = phi_max;
-                //break;
+                break;
               }
             }
             else {
               timex0 = 0;
-              sumx   = 0.0e0;
+              sumy   = 0.0e0;
             }
            }
 
           }  // end loop while
 
-          //if(ext_tumor == 0) fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, td2, -1.0e0);
+          if(ext_tumor == 0) fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, d4, -1.0e0);
         }    //end loop td2
-        //fprintf (o, "\n");  // separa um bloco de outro
+        fprintf (o, "\n");  // separa um bloco de outro
       }      // and single region
 
     }        //end loop phi0
