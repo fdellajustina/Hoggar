@@ -38,7 +38,7 @@ int          nn = NN;
 #define  A31      1.1e0
 #define  A32      1.0e-5
 #define  D3       0.1e0
-#define  D4       2.0e0
+#define  D4       0.05e0
 #define  PHI      5.0e0
 #define  R2       1.2e0
 #define  R3       1.291e0
@@ -48,8 +48,8 @@ int          nn = NN;
   #define NPHI  1
 #endif
 
-#ifndef ND4
-  #define ND4  1
+#ifndef NTD2
+  #define NTD2  1
 #endif
 
 #ifndef PHI_MIN
@@ -60,19 +60,19 @@ int          nn = NN;
   #define PHI_MAX  15.0e0
 #endif
 
-#ifndef D4_MIN
-  #define D4_MIN  4.0e0
+#ifndef TD2_MIN
+  #define TD2_MIN  4.0e0
 #endif
 
-#ifndef D4_MAX
-  #define D4_MAX 10.0e0
+#ifndef TD2_MAX
+  #define TD2_MAX 10.0e0
 #endif
 int        nphi = NPHI;                            // divisão da malha em x
-int        nd4  = ND4;                            // divisão da malha em y
+int        ntd2 = NTD2;                            // divisão da malha em y
 double  phi_min = PHI_MIN;                         // valor inferior da malha
 double  phi_max = PHI_MAX;                         // valor superior da malha
-double  d4_min  = D4_MIN;                         // valor inferior da malha
-double  d4_max  = D4_MAX;                        // valor superior da malha
+double  td2_min = TD2_MIN;                         // valor inferior da malha
+double  td2_max = TD2_MAX;                        // valor superior da malha
 
 double   r2     = R2;                            // proliferation rate
 double   r3     = R3;                            // proliferation rate
@@ -91,11 +91,3 @@ double   phi    = PHI;                           // dose do quimioterápico
 double   tmax   = TMAX;                          // tempo máximo de integração
 double   h      = H;                             // passo de integração do DVERK
 double   tol    = TOL;                           // tolerância ao erro
-
-// controle de aplicação do quimioterápico
-int         ntx0;                                // numero de tempo seguidos com x=0
-int         freqQui;                             // frequencia de aplicação do quimio
-double      td1;                                 // período sem aplicação do quimioterápico
-double      td2;                                 // período de aplicação do quimioterápico
-double      eps;                                 // contagem do período
-double      epst;                                // extinção do tumor
