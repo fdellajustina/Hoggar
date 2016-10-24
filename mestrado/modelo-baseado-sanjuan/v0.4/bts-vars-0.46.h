@@ -24,7 +24,7 @@ TIPO   = INICIALIZAÇÃO ->  0 - Saddle with two positive eigenvalues
 #define NN        4
 int          nn = NN;
 
-#define  TMAX     1.0e3
+#define  TMAX     3.0e2
 #define  H        1.0e-2
 #define  TOL      1.0e-7
 
@@ -91,3 +91,18 @@ double   phi    = PHI;                           // dose do quimioterápico
 double   tmax   = TMAX;                          // tempo máximo de integração
 double   h      = H;                             // passo de integração do DVERK
 double   tol    = TOL;                           // tolerância ao erro
+
+// controle de aplicação do quimioterápico
+int         ntx0;                                // numero de tempo seguidos com x=0
+int         freqQui;                             // frequencia de aplicação do quimio
+int         iT;
+double      Gamma;                               // taxa de crescimento e descrescimento de phi em apli_qui()
+double      td1;                                 // período sem aplicação do quimioterápico
+double      t1;
+double      t2;
+double      dt1;                                 // contagem tempo na função de apli_qui()
+double      td1_3;                               // um terço de dt1
+double      td2;                                 // período de aplicação do quimioterápico
+double      eps;                                 // contagem do período
+double      epst;                                // extinção do tumor
+double      nT;

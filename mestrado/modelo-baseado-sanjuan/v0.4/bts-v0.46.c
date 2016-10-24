@@ -51,19 +51,15 @@ double      y[NN];
 
 //  ---------------------------------------------------------------------
 int main () {
-  //FILE *o=fopen("optimal-q.dat","w");
-  FILE *a=fopen("bts-v0.45.dat","w");
-  int         ind, loop, i, j, iT, timex0, ntx0, ext_tumor;
-  double      phi0, td1, td2, eps, epst, nT;
-  // int 3
-  //int         ind, loop, i, j, iT, timex0, ntx0, nphi, ntd2, ext_tumor;
-  //double      phi_min, phi_max, td2_min, td2_max, phi0, td1, td2, eps, epst, nT;
+  FILE *a=fopen("bts-v0.46.dat","w");
+  int         ind, loop, i, j, timex0, ext_tumor;
+  double      phi0;
   double      t, tout, w[NN * 9], c[24], sumx;
 
   make_header (stdout);
-  //make_header (o);
   make_header (a);
 
+  freqQui = 1;               // frequencia de aplicação do quimio
   ntx0    = 100.0e0 / h; // numero de tempo seguidos com x=0
   eps     = h;           // contagem do período
   epst    = 1.0e-2;      // extinção do tumor
@@ -80,6 +76,9 @@ int main () {
           td2 = dequant(j,0,ntd2,td2_min,td2_max);      // tempo de aplicação do quimio
           td1 = 3.0e0 * td2;                            // tempo sem aplicação do quimio
 
+          //td2 = 1.0e0;      // tempo de aplicação do quimio
+          //td1 = 2.0e0 * td2;                            // tempo sem aplicação do quimio
+
           //fflush(o);
 
           y[0] = 0.2e0;                                       // x
@@ -95,30 +94,19 @@ int main () {
           timex0 = 0;     // contagem de tempo em que x=0
           ext_tumor = 0;  // extinção do tumor? (FLAG)
           sumx   = 0.0e0; // média de x
+          dt1    = 0.0e0;
+          t1     = 0.0e0;
+          t2     = 0.0e0;
+          Gamma  = 0.5e0;
+          td1_3  = td1/3.0e0;
           //phi    = phi0;
 
           // órbita
           while (t <= tmax) {
-           if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3]);
+           if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3], phi);
 
             if(ext_tumor == 0) {
-              if(td1 <= 1.0e-5) phi = phi0;
-              else{
-                if(((iT+1) % 5 == 0)){
-                  phi = phi0;
-                  if((nT - t) < eps){
-                     iT++;
-                     nT += td1;
-                  }
-                }
-                else{
-                  phi = 0.0e0;
-                  if((nT - t) < eps){
-                     iT++;
-                     nT += td2;
-                  }
-                }
-              }
+              apli_qui(phi0, t);
             }
 
             tout = t + h;
@@ -131,7 +119,6 @@ int main () {
               timex0++;
               sumx+=y[1];
               if(timex0 == ntx0){
-                //fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, td2, sumx/(double) timex0);
                 ext_tumor = 1;
                 phi = 0.0e0;
                 y[3] = 0.0e0;
@@ -143,14 +130,9 @@ int main () {
               sumx   = 0.0e0;
             }
            }
-
           }  // end loop while
-
-          //if(ext_tumor == 0) fprintf(o,"%12.6f %12.6f %12.6f\n", phi0, td2, -1.0e0);
         }    //end loop td2
-        //fprintf (o, "\n");  // separa um bloco de outro
       }      // and single region
-
     }        //end loop phi0
   }
 

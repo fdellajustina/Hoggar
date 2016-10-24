@@ -5,7 +5,7 @@
 # variáveis definidas para este shell
 cmp=gcc
 src=bts
-ver=v0.45
+ver=v0.46
 ext=c
 param=" -Wall -O2 "
 
