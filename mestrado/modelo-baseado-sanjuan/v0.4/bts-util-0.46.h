@@ -42,13 +42,14 @@ double dequant (int i, int min, int max, double xmin, double xmax) {
   return (xmin + (xmax - xmin) * (double) (i - min) / (double) (max - min));
 }
 
-void apli_qui(double phi0, double *phi1, double t){
+void apli_qui(double phi0, double *phiMax, double *phiMin, double t){
   if(td1 < 1.0e-5) phi = phi0;
   else{
     if(t1 < td1){
       t1 += h;
 
-      if(fabs(dt1 - td1_3) < eps) *phi1 = phi;
+      if(fabs(dt1 - td1_3) < eps) *phiMax = phi;
+      if(fabs(dt1 - 3.0e0*td1_3) < eps) *phiMin = phi;
 
       if(dt1 < td1_3){
         phi=exp(Gamma*dt1);
@@ -60,7 +61,7 @@ void apli_qui(double phi0, double *phi1, double t){
         }
         else{
           if((dt1 > 2.0e0*td1_3) && (dt1 < 3.0e0*td1_3)){
-            phi=*phi1*exp(-Gamma*fabs(dt1-2.0e0*td1_3));
+            phi=*phiMax*exp(-Gamma*fabs(dt1-2.0e0*td1_3));
             dt1+=h;
           }
         }
@@ -70,7 +71,7 @@ void apli_qui(double phi0, double *phi1, double t){
     }
     else{
       t2 += h;
-      phi = 0.0e0;
+      phi = *phiMin;
       if(fabs(t2 - td2) < eps){
          t1 = 0.0e0;
          dt1 = 0.0e0;

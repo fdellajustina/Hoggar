@@ -53,7 +53,7 @@ double      y[NN];
 int main () {
   FILE *a=fopen("bts-v0.46.dat","w");
   int         ind, loop, i, j, timex0, ext_tumor;
-  double      phi0, phi1;
+  double      phi0, phiMax, phiMin;
   double      t, tout, w[NN * 9], c[24], sumx;
 
   make_header (stdout);
@@ -92,15 +92,15 @@ int main () {
           dt1    = 0.0e0;
           t1     = 0.0e0;
           t2     = 0.0e0;
-          Gamma  = 0.09e0;
+          Gamma  = 0.6e0;
           td1_3  = td1/3.0e0;
 
           // órbita
           while (t <= tmax) {
              if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3], phi);
 
-              if(ext_tumor == 0) {
-                apli_qui(phi0, &phi1, t);               // função que aplica o quimioterápico
+              if(ext_tumor == 0) {                      // tumor foi extinto?
+                apli_qui(phi0, &phiMax, &phiMin, t);    // função que aplica o quimioterápico
               }
 
               tout = t + h;
@@ -112,9 +112,9 @@ int main () {
                 if(fabs(y[0]) <= epst){
                   timex0++;
                   sumx+=y[1];
-                  if(timex0 == ntx0){
+                  if(timex0 == ntx0){                   // x=0 para ntx0 tempo?
                     ext_tumor = 1;
-                    phi = 0.0e0;
+                    phi = 0.0e0;                        // sem câncer por ntx0 tempos? então paramos de aplicar quimioterápico.
                     //y[3] = 0.0e0;
                     //break;
                   }
