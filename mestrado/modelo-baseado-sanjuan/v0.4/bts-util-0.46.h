@@ -42,58 +42,31 @@ double dequant (int i, int min, int max, double xmin, double xmax) {
   return (xmin + (xmax - xmin) * (double) (i - min) / (double) (max - min));
 }
 
-void apli_qui(double phi0, double t){
-  double phi1;
-  //if(td1 < 1.0e-5) phi = phi0;
-  //else{
-    //if(t1 < td1){
-      //t1 += h;
-      //phi = phi0;
-
-      //if(fabs(t1 - td1) < eps){
-        //t1 = 2.0e0*td1;
-        //t2 = 0.0e0;
-      //}
-    //}
-    //else{
-      //t2 += h;
-      //phi = 0.0e0;
-      //if(fabs(t2 - td2) < eps){
-         //t1 = 0.0e0;
-         //dt1 = 0.0e0;
-      //}
-    //}
-  //}
-
-
+void apli_qui(double phi0, double *phi1, double t){
   if(td1 < 1.0e-5) phi = phi0;
   else{
     if(t1 < td1){
       t1 += h;
+
+      if(fabs(dt1 - td1_3) < eps) *phi1 = phi;
+
       if(dt1 < td1_3){
         phi=exp(Gamma*dt1);
         dt1+=h;
       }
       else{
-        phi1 = phi;
-        //printf("phi1= %4.1f\n", phi1);
-
         if((dt1 > td1_3) && (dt1 < 2.0e0*td1_3)){
-          //phi = phi1;
           dt1+=h;
         }
         else{
           if((dt1 > 2.0e0*td1_3) && (dt1 < 3.0e0*td1_3)){
-            phi=phi1exp(-Gamma*fabs(dt1-2.0e0*td1_3));
+            phi=*phi1*exp(-Gamma*fabs(dt1-2.0e0*td1_3));
             dt1+=h;
           }
         }
       }
 
-      if(fabs(t1 - td1) < eps){
-        //t1 = 2.0e0*td1;
-        t2 = 0.0e0;
-      }
+      if(fabs(t1 - td1) < eps) t2 = 0.0e0;
     }
     else{
       t2 += h;
@@ -104,7 +77,5 @@ void apli_qui(double phi0, double t){
       }
     }
   }
-
-  //printf("t1= %4.1f t2= %4.1f dt1= %4.1f phi= %4.1f\n",t1, t2, dt1, phi);
 
 }

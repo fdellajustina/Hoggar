@@ -53,7 +53,7 @@ double      y[NN];
 int main () {
   FILE *a=fopen("bts-v0.46.dat","w");
   int         ind, loop, i, j, timex0, ext_tumor;
-  double      phi0;
+  double      phi0, phi1;
   double      t, tout, w[NN * 9], c[24], sumx;
 
   make_header (stdout);
@@ -76,64 +76,58 @@ int main () {
           td2 = dequant(j,0,ntd2,td2_min,td2_max);      // tempo de aplicação do quimio
           td1 = 3.0e0 * td2;                            // tempo sem aplicação do quimio
 
-          //td2 = 1.0e0;      // tempo de aplicação do quimio
-          //td1 = 2.0e0 * td2;                            // tempo sem aplicação do quimio
-
-          //fflush(o);
-
-          y[0] = 0.2e0;                                       // x
-          y[1] = 0.9e0;                                        // y
-          y[2] = 0.1e0;                                        // z
-          y[3] = phi_max;                                     // q
+          y[0] = 0.2e0;                                 // x
+          y[1] = 0.9e0;                                 // y
+          y[2] = 0.1e0;                                 // z
+          y[3] = phi_max;                               // q
 
           t    = 0.0e0;
           ind  = 1;
           loop = 0;
           iT   = 1;
-          nT   = td2;     // começa com aplicação
-          timex0 = 0;     // contagem de tempo em que x=0
-          ext_tumor = 0;  // extinção do tumor? (FLAG)
-          sumx   = 0.0e0; // média de x
+          nT   = td2;                                   // começa com aplicação
+          timex0 = 0;                                   // contagem de tempo em que x=0
+          ext_tumor = 0;                                // extinção do tumor? (FLAG)
+          sumx   = 0.0e0;                               // média de x
           dt1    = 0.0e0;
           t1     = 0.0e0;
           t2     = 0.0e0;
-          Gamma  = 0.5e0;
+          Gamma  = 0.09e0;
           td1_3  = td1/3.0e0;
-          //phi    = phi0;
 
           // órbita
           while (t <= tmax) {
-           if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3], phi);
+             if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3], phi);
 
-            if(ext_tumor == 0) {
-              apli_qui(phi0, t);
-            }
-
-            tout = t + h;
-            dverk (&nn, &t, y, &tout, &tol, &ind, c, &nn, w);
-            if (ind != 3) printf ("\nDVERK ERROR, IND=%d.\n\n", ind);
-            loop++;
-
-           if(ext_tumor == 0) {
-            if(fabs(y[0]) <= epst){
-              timex0++;
-              sumx+=y[1];
-              if(timex0 == ntx0){
-                ext_tumor = 1;
-                phi = 0.0e0;
-                y[3] = 0.0e0;
-                //break;
+              if(ext_tumor == 0) {
+                apli_qui(phi0, &phi1, t);               // função que aplica o quimioterápico
               }
-            }
-            else {
-              timex0 = 0;
-              sumx   = 0.0e0;
-            }
-           }
+
+              tout = t + h;
+              dverk (&nn, &t, y, &tout, &tol, &ind, c, &nn, w);
+              if (ind != 3) printf ("\nDVERK ERROR, IND=%d.\n\n", ind);
+              loop++;
+
+             if(ext_tumor == 0) {
+                if(fabs(y[0]) <= epst){
+                  timex0++;
+                  sumx+=y[1];
+                  if(timex0 == ntx0){
+                    ext_tumor = 1;
+                    phi = 0.0e0;
+                    //y[3] = 0.0e0;
+                    //break;
+                  }
+              }
+              else {
+                timex0 = 0;
+                sumx   = 0.0e0;
+              }
+             }
           }  // end loop while
-        }    //end loop td2
-      }      // and single region
-    }        //end loop phi0
+        }   //end loop td2
+      }    // and single region
+    }     //end loop phi0
   }
 
  fclose (a);
