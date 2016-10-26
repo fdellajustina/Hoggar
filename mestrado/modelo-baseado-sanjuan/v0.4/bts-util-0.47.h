@@ -37,6 +37,10 @@ void make_header (FILE * o) {
   fprintf (o, "#         h = %10.5f\n", h);
   fprintf (o, "#       tol = %10.5f\n", tol);
   fprintf (o, "#\n");
+  #ifdef BREAK
+    fprintf (o, "#     BREAK DEFINED\n");              // Break após ntx0 tempos
+  #endif
+  fprintf (o, "#\n");
 }                                                      // end for function make_header(FILE *o)
 
 // DEQUANT

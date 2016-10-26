@@ -49,6 +49,9 @@ int main () {
   int         ind, loop, i, j, timex0, ext_tumor;
   double      phi0;
   double      t, tout, w[NN * 9], c[24], sumx;
+  #ifdef BREAK
+     int ext;
+  #endif
 
   char file[256];
   FILE *a;
@@ -70,9 +73,10 @@ int main () {
           td2 = dequant(j,0,ntd2,td2_min,td2_max);      // tempo de aplicação do quimio
           td1 = 3.0e0 * td2;                            // tempo sem aplicação do quimio
 
+          // condição inicial
           y[0] = 0.2e0;                                 // x
           y[1] = 0.9e0;                                 // y
-          y[2] = 0.1e0;                                 // z
+          y[2] = 0.5e0;                                 // z
           y[3] = phi_max;                               // q
 
           t    = 0.0e0;
@@ -88,6 +92,9 @@ int main () {
           t2     = 0.0e0;
           td1_3  = td1/3.0e0;
           Gamma  = log(phiMax)/td1_3;                   // taxa de crescimento e descrescimento de phi
+          #ifdef BREAK
+            ext = 2;
+          #endif
 
           // órbita
           while (t <= tmax) {
@@ -109,15 +116,20 @@ int main () {
                   if(timex0 == ntx0){                   // x=0 para ntx0 tempo?
                     ext_tumor = 1;                      // tumor foi extinto por ntx0 tempos
                     phi = 0.0e0;                        // sem câncer por ntx0 tempos? então paramos de aplicar quimioterápico.
-                    //y[3] = 0.0e0;
-                    //break;
                   }
-              }
+                }
               else {
                 timex0 = 0;
                 sumx   = 0.0e0;
               }
              }
+
+             #ifdef BREAK
+               if(ext_tumor == 1) ext++;
+               if(ext % ntx0 == 0) break;
+             #endif
+
+
           }  // end loop while
         }   //end loop td2
       }    // and single region
