@@ -52,16 +52,11 @@ int main () {
 
   char file[256];
   FILE *a;
-  sprintf(file, "bts-%s.dat", vers_id);
-  if ((a = fopen(file, "w")) == NULL) return 1;
+  sprintf(file,"bts-%s.dat", vers_id);
+  if((a = fopen(file, "w")) == NULL) return 1;
 
   make_header (stdout);
   make_header (a);
-
-  freqQui = 1;               // frequencia de aplicação do quimio
-  ntx0    = 100.0e0 / h;     // numero de tempo seguidos com x=0
-  eps     = h;               // contagem do período
-  epst    = 1.0e-2;          // extinção do tumor
 
   #pragma omp parallel private(i,j)
   {
@@ -92,15 +87,14 @@ int main () {
           t1     = 0.0e0;
           t2     = 0.0e0;
           td1_3  = td1/3.0e0;
-          phiMax = 10.0e0;                              // phi máximo
-          Gamma  = log(phiMax)/td1_3;
+          Gamma  = log(phiMax)/td1_3;                   // taxa de crescimento e descrescimento de phi
 
           // órbita
           while (t <= tmax) {
              if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3], phi);
 
               if(ext_tumor == 0) {                      // tumor foi extinto?
-                apli_qui(phi0, phiMax, t);    // função que aplica o quimioterápico
+                apli_qui(phi0, phiMax, t);              // função que aplica o quimioterápico
               }
 
               tout = t + h;
@@ -109,11 +103,11 @@ int main () {
               loop++;
 
              if(ext_tumor == 0) {
-                if(fabs(y[0]) <= epst){
+                if(fabs(y[0]) <= epst){                 // x=0?
                   timex0++;
-                  sumx+=y[1];
+                  sumx+=y[1];                           // Média de y
                   if(timex0 == ntx0){                   // x=0 para ntx0 tempo?
-                    ext_tumor = 1;
+                    ext_tumor = 1;                      // tumor foi extinto por ntx0 tempos
                     phi = 0.0e0;                        // sem câncer por ntx0 tempos? então paramos de aplicar quimioterápico.
                     //y[3] = 0.0e0;
                     //break;
