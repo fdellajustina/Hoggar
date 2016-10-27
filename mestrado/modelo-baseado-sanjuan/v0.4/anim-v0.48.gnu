@@ -17,7 +17,11 @@ if (!exists("MP_BOTTOM")) MP_BOTTOM = .1
 if (!exists("MP_TOP"))    MP_TOP = .9
 if (!exists("MP_GAP"))    MP_GAP = 0.09
 
-frames = 100
+frames = 200
 frame  = 0
+dt=0.01
+phi_max=12.0
+phi_min=0.0
+dphi=(phi_max-phi_min)/frames
 
-call 'frame-v0.48.gnu'
+call 'frame-v0.481.gnu'
