@@ -108,50 +108,50 @@ void make_gnu_frames(){
   fprintf(o,"# ************************************************************************\n");
   fprintf(o,"\n");
 
-  fprintf(o,"s = sprintf('{/:Bold=18 tx0=%%6.2f epst=%%6.2f phiMax = %%6.2f}', tx0, epst, dphi*frame) \n");
+  fprintf(o,"s = sprintf('{/:Bold=18 tx0=%%6.2f epst=%%6.2f phiMax = %%6.2f td2 = %%6.2f}', tx0, epst, dphi*frame, dtd2*frame) \n");
   fprintf(o,"print frame\n");
 
   fprintf(o,"set multiplot title s font ',14'\n");
 
-  fprintf(o,"#*********************************\n");
+  fprintf(o,"\n#*********************************\n");
   fprintf(o,"set xtics 100 \n");
   fprintf(o,"set ytics 0.2 \n");
-  fprintf(o,"set origin 0.0,0.0 \n");
-  fprintf(o,"set size 0.48,0.48 \n");
+  fprintf(o,"set origin 0.35,0.0 \n");
+  fprintf(o,"set size 0.65,0.3 \n");
   fprintf(o,"set ylabel 'z' rotate by 0 \n");
-  fprintf(o,"plot [0:400][0:1] 'bts-%s.dat' i frame u 1:4 w l lw 2 lc -1 \n", vers_id);
+  fprintf(o,"plot [0:400][0:1.2] 'bts-%s.dat' i frame u 1:4 w l lw 2 lc -1 \n", vers_id);
 
-  fprintf(o,"#********************************* \n");
-  fprintf(o,"set origin 0.0,0.5 \n");
-  fprintf(o,"set size 0.48,0.48 \n");
+  fprintf(o,"\n#********************************* \n");
+  fprintf(o,"set origin 0.35,0.32 \n");
+  fprintf(o,"set size 0.65,0.3 \n");
   fprintf(o,"unset xlabel \n");
   fprintf(o,"set ylabel 'x' rotate by 0 \n");
   fprintf(o,"plot [0:400][-0.1:1.1] 'bts-%s.dat' i frame u 1:2 w l lw 2 lc -1 \n", vers_id);
 
-  fprintf(o,"#********************************* \n");
-  fprintf(o,"set origin 0.5,0.5 \n");
-  fprintf(o,"set size 0.48,0.48 \n");
+  fprintf(o,"\n#********************************* \n");
+  fprintf(o,"set origin 0.35,0.62 \n");
+  fprintf(o,"set size 0.65,0.3 \n");
   fprintf(o,"set xlabel 't' \n");
   fprintf(o,"set ylabel 'y' rotate by 0 \n");
   fprintf(o,"plot [0:400][-0.1:1.1] 'bts-%s.dat' i frame u 1:3 w l lw 2 lc -1 \n", vers_id);
 
-  fprintf(o,"#********************************* \n");
-  fprintf(o,"set origin 0.5,0.0 \n");
-  fprintf(o,"set size 0.48,0.48 \n");
+  fprintf(o,"\n#********************************* \n");
+  fprintf(o,"set origin 0.0,0.1 \n");
+  fprintf(o,"set size 0.35,0.3 \n");
 
   fprintf(o,"set xtics 100 \n");
   fprintf(o,"set ytics 20 \n");
   fprintf(o,"set xlabel 't' \n");
   fprintf(o,"set ylabel 'q' rotate by 0 \n");
-  fprintf(o,"plot [][0:70] 'bts-%s.dat' i frame u 1:5 w l lw 2 lc -1 \n", vers_id);
+  fprintf(o,"plot [0:400][0:70] 'bts-%s.dat' i frame u 1:5 w l lw 2 lc -1 \n", vers_id);
 
   fprintf(o,"# Small plot  ******************** \n");
-  fprintf(o,"set origin 0.67,0.27 \n");
-  fprintf(o,"set size 0.3,0.20 \n");
+  fprintf(o,"set origin 0.0,0.6 \n");
+  fprintf(o,"set size 0.35,0.3 \n");
   fprintf(o,"set ytics 10 \n");
   fprintf(o,"set xlabel 't' \n");
   fprintf(o,"set ylabel 'phi' rotate by 0 \n");
-  fprintf(o,"plot [0:400][0:21] 'bts-%s.dat' i frame u 1:6 w l lw 2 lc -1 \n", vers_id);
+  fprintf(o,"plot [0:400][0:%6.1f] 'bts-%s.dat' i frame u 1:6 w l lw 2 lc -1 \n", phi_max, vers_id);
 
   fprintf(o,"unset multiplot\n");
 
@@ -180,19 +180,22 @@ void make_gnu_anim(){
   fprintf(o,"unset key\n");
   fprintf(o,"\n");
   fprintf(o,"set tics out\n");
-  fprintf(o,"set size sq\n");
+  fprintf(o,"set size 2,1\n");
   fprintf(o,"set grid\n");
   fprintf(o,"\n");
   fprintf(o,"tx0        = %g\n", tx0);
   fprintf(o,"epst       = %g\n", epst);
   fprintf(o,"phi_max    = %g\n", phi_max);
   fprintf(o,"phi_min    = %g\n", phi_min);
+  fprintf(o,"td2_max    = %g\n", td2_max);
+  fprintf(o,"td2_min    = %g\n", td2_min);
   fprintf(o,"\n");
   fprintf(o,"frames     = %d\n", nphi);
   fprintf(o,"frame      = 0\n");
   fprintf(o,"dphi       = (phi_max-phi_min)/frames \n");
+  fprintf(o,"dtd2       = (td2_max-td2_min)/frames \n");
   fprintf(o,"\n");
-  fprintf(o,"set term gif animate delay 40 opt size 1200,1200\n");
+  fprintf(o,"set term gif animate delay 40 opt size 1500,1200\n");
   fprintf(o,"set out 'anim-%s.gif'\n", vers_id);
   fprintf(o,"\n");
   fprintf(o,"call 'anim-frames-%s.gnu'\n", vers_id);

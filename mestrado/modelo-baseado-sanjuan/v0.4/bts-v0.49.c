@@ -65,12 +65,12 @@ int main () {
   make_header (stdout);
   make_header (a);
 
-  for (i = 0; i <= nphi; i++){
+  for (i = 0; i < nphi; i++){
     phiMax = dequant(i, 0, nphi, phi_min, phi_max);
     fprintf(a,"\n\n# phiMax = %5.2f\n", phiMax);
     printf("phiMax = %6.2f i = %d \n", phiMax, i);                                  // print na tela, controle!
 
-    for (j = 0; j <  ntd2; j++){
+    for (j = 0; j <=  ntd2; j++){
       td2 = dequant(j,0,ntd2,td2_min,td2_max);      // tempo de aplicação do quimio
       td1 = 2.0e0 * td2;                            // tempo sem aplicação do quimio
 
