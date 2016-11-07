@@ -97,27 +97,23 @@ int main () {
            if(loop % 1 == 0) fprintf(a,"%5.2f %12.6f %12.6f %12.6f %12.6f\n", t, y[0], y[1], y[2], y[3]);
 
             if(ext_tumor == 0) {
-            if(td1 <= 1.0e-5) {
-              phi = phi0;
-            }
-            else{
-             if(ext_tumor == 0) {
-              if(((iT+1) % 5 == 0)){
-                phi = phi0;
-                if((nT - t) < eps){
-                   iT++;
-                   nT += td1;
-                }
-              }
+              if(td1 <= 1.0e-5) phi = phi0;
               else{
-                phi = 0.0e0;
-                if((nT - t) < eps){
-                   iT++;
-                   nT += td2;
+                if(((iT+1) % 5 == 0)){
+                  phi = phi0;
+                  if((nT - t) < eps){
+                     iT++;
+                     nT += td1;
+                  }
+                }
+                else{
+                  phi = 0.0e0;
+                  if((nT - t) < eps){
+                     iT++;
+                     nT += td2;
+                  }
                 }
               }
-             }
-             }
             }
 
             tout = t + h;
